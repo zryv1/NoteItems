@@ -10,6 +10,33 @@ class FirstPage extends StatefulWidget {
 
 class _FirstPageState extends State<FirstPage> {
 
+  void openProjectCreateWindow() {
+    showDialog(
+      context: context,
+      builder: (BuildContext buildContext) {
+        return AlertDialog(
+          title: Text("Новый проект"),
+          content: TextField(
+            decoration: InputDecoration(
+              labelText: "Название проекта",
+              border: UnderlineInputBorder(),
+            ),
+          ),
+          actions: <Widget>[
+            ElevatedButton(
+              onPressed: () => Navigator.pop(buildContext),
+              child: Text("Создать"),
+            ),
+            TextButton(
+              onPressed: () => Navigator.pop(buildContext),
+              child: Text("Отмена"),
+            ),
+          ],
+        );
+      },
+    );
+  }
+  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -20,11 +47,12 @@ class _FirstPageState extends State<FirstPage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            // TODO Добавить динамический поиск
-            // TODO Добавить кнопку "Cоздать проект"
-            // TODO Добавить список созданных проектов
           ],
         ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: openProjectCreateWindow,
+        child: const Icon(Icons.add),
       ),
     );
   }
