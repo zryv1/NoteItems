@@ -16,7 +16,7 @@ class MyApp extends StatelessWidget {
 
       initialRoute: "/",
       routes: {
-        "/": (context) => const MainPage(title: "Страница авторизации"),
+        "/": (context) => const AuthPage(title: "Страница авторизации"),
         "/projects": (context) => const FirstPage(title: "Мои проекты"),
       },
     );

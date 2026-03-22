@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 
-class MainPage extends StatefulWidget {
-  const MainPage({super.key, required this.title});
+class AuthPage extends StatefulWidget {
+  const AuthPage({super.key, required this.title});
   final String title;
 
   @override
-  State<MainPage> createState() => _MainPageState();
+  State<AuthPage> createState() => _AuthPageState();
 }
 
-class _MainPageState extends State<MainPage> {
+class _AuthPageState extends State<AuthPage> {
 
   @override
   Widget build(BuildContext context) {
