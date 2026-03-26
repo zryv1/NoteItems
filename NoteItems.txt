@@ -1,0 +1,32 @@
+
+class ProjectModel {
+    projectName: String; (PrimaryKey)
+    pathToImage: String;
+    floors: Map<> FloorModel;
+}
+
+class FloorModel {
+    items: <Dict>ItemModel;
+}
+
+class ItemModel {
+    Id: Int; (PrimaryKey)
+    coord_x: Float;
+    coord_y: Float;
+    name: String;
+    icon: String;
+    description: String;
+}
+
+
+
+
+
+При нажатии на "Создать" в окне "Создать проект" проверяется существование ключа
+Если ключ существует, то выдаём предупреждение об этом и просим выбрать другое название
+Если ключа нет, то сохраняем ProjectModel с ключом projectName а
+
+
+[Floor, Floor, Floor, Floor, Floor]
+[Floor.Key, Floor.Key, Floor.Key, Floor.Key, Floor.Key]
+[1, 2, 3, 4, 5]

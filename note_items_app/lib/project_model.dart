@@ -1,6 +1,12 @@
-class ProjectModel {
-  final int id;
-  final String name;
+import 'dart:ffi';
+import 'floor_model.dart';
 
-  ProjectModel({required this.id, required this.name});
+class Project {
+  final String name;
+  final Map<Int, Floor>? floors; // floorNumber: Floor
+
+  Project({
+    required this.name,
+    this.floors
+  });
 }

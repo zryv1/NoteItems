@@ -1,11 +1,16 @@
-import "dart:convert";
-import "project_model.dart";
-import "package:shared_preferences/shared_preferences.dart";
+import 'project_model.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 
 class ProjectsStorage {
-  final sharedPrefs = SharedPreferences.getInstance();
 
-  void createProject() {
-
+  Project createProject(String projectName) {
+    final Project project = Project(name: projectName);
+    return project;
+  }
+  
+  void addProjectToStorage(Project project) async {
+    final projects = Hive.box("projects");
+    await projects.put(project.name, project);
+    projects.close();
   }
 }

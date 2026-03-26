@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'projects_storage.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 
 class FirstPage extends StatefulWidget {
-  const FirstPage({super.key, required this.title});
+  FirstPage({super.key, required this.title});
   final String title;
 
   @override
@@ -11,12 +13,15 @@ class FirstPage extends StatefulWidget {
 class _FirstPageState extends State<FirstPage> {
 
   void openProjectCreateWindow() {
+    final TextEditingController _controller = TextEditingController();
+
     showDialog(
       context: context,
       builder: (BuildContext buildContext) {
         return AlertDialog(
           title: Text("Новый проект"),
           content: TextField(
+            controller: _controller,
             decoration: InputDecoration(
               labelText: "Название проекта",
               border: UnderlineInputBorder(),
@@ -24,12 +29,18 @@ class _FirstPageState extends State<FirstPage> {
           ),
           actions: <Widget>[
             ElevatedButton(
-              onPressed: () => Navigator.pop(buildContext),
               child: Text("Создать"),
+              onPressed: () {
+                final projectName = _controller.text;
+                if (projectName.isNotEmpty) {
+                  final project = ProjectsStorage().createProject(projectName);
+                  ProjectsStorage().addProjectToStorage(project);
+                }
+              },
             ),
             TextButton(
-              onPressed: () => Navigator.pop(buildContext),
               child: Text("Отмена"),
+              onPressed: () {Navigator.pop(buildContext);},
             ),
           ],
         );
@@ -51,7 +62,10 @@ class _FirstPageState extends State<FirstPage> {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: openProjectCreateWindow,
+        onPressed: () {
+          openProjectCreateWindow();
+          print(Hive.box("projects").keys);
+        },
         child: const Icon(Icons.add),
       ),
     );
