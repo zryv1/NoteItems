@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'projects_storage.dart';
-import 'package:hive_flutter/hive_flutter.dart';
 
 class FirstPage extends StatefulWidget {
   FirstPage({super.key, required this.title});
@@ -35,6 +34,8 @@ class _FirstPageState extends State<FirstPage> {
                 if (projectName.isNotEmpty) {
                   final project = ProjectsStorage().createProject(projectName);
                   ProjectsStorage().addProjectToStorage(project);
+                  Navigator.pop(buildContext);
+                  setState(() {});
                 }
               },
             ),
@@ -47,6 +48,17 @@ class _FirstPageState extends State<FirstPage> {
       },
     );
   }
+
+  List<Widget> getProjects() {
+    final projects = ProjectsStorage().getProjects();
+    List<Widget> project_list = [];
+    for (var value in projects.values) {
+      final project_name = value.name;
+      final button = Text(project_name);
+      project_list.add(button);
+    }
+    return project_list;
+  }
   
   @override
   Widget build(BuildContext context) {
@@ -57,14 +69,12 @@ class _FirstPageState extends State<FirstPage> {
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-          ],
+          children: getProjects(),
         ),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           openProjectCreateWindow();
-          print(Hive.box("projects").keys);
         },
         child: const Icon(Icons.add),
       ),

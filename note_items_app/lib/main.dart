@@ -1,21 +1,27 @@
-import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
-import 'package:note_items/auth_page.dart';
-import 'package:note_items/projects_page.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:note_items/models/project_model.dart';
+import 'package:note_items/models/floor_model.dart';
+import 'package:note_items/models/item_model.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
+import 'auth_page.dart';
+import 'projects_page.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   if (kIsWeb) {
-    Hive.init('hive_storage');
+    Hive.init('storage');
   } else {
-    // Для Android/iOS используем путь к документам приложения
     final appDocumentDir = await getApplicationDocumentsDirectory();
     Hive.init(appDocumentDir.path);
   }
 
-  await Hive.openBox('projects');
+  Hive.registerAdapter(ProjectAdapter());
+  Hive.registerAdapter(FloorAdapter());
+  Hive.registerAdapter(ItemAdapter());
+
+  await Hive.openBox<Project>("projects");
 
   runApp(MyApp());
 }
