@@ -54,7 +54,11 @@ class _FirstPageState extends State<FirstPage> {
     List<Widget> project_list = [];
     for (var value in projects.values) {
       final project_name = value.name;
-      final button = Text(project_name);
+      print("$project_name, ${value.id}");
+      final button = TextButton(
+        child: Text(project_name),
+        onPressed: () {},
+      );
       project_list.add(button);
     }
     return project_list;
@@ -68,7 +72,7 @@ class _FirstPageState extends State<FirstPage> {
       ),
       body: Center(
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.start,
           children: getProjects(),
         ),
       ),

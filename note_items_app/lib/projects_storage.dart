@@ -5,19 +5,11 @@ class ProjectsStorage {
 
   Project createProject(String projectName) {
     // Временное решение с использованием int значения для id
-    final projects = Hive.box<Project>("projects");
-    String id;
-
-    if (projects.isNotEmpty) {
-      id = (int.parse(
-          projects.get(projects.keys.last)!.id
-      ) + 1
-      ).toString();
-    } else {
-      id = "0";
-    }
-
-    final Project project = Project(id: id, name: projectName);
+    final idBox = Hive.box<int>("id");
+    final id = idBox.get("id", defaultValue: 0);
+    final project_id = id.toString();
+    final Project project = Project(id: project_id, name: projectName);
+    idBox.put("id", id! + 1);
     return project;
   }
   

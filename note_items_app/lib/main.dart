@@ -22,6 +22,7 @@ void main() async {
   Hive.registerAdapter(ItemAdapter());
 
   await Hive.openBox<Project>("projects");
+  await Hive.openBox<int>("id");
 
   runApp(MyApp());
 }
