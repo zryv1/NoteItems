@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+import 'models/project_model.dart';
 import 'projects_storage.dart';
 
 class FirstPage extends StatefulWidget {
-  FirstPage({super.key, required this.title});
+  const FirstPage({super.key, required this.title});
   final String title;
 
   @override
@@ -11,8 +12,13 @@ class FirstPage extends StatefulWidget {
 
 class _FirstPageState extends State<FirstPage> {
 
+  late final projects = getProjectsAsButtonList();
+
+  // TODO projects должен лежать в Hive, чтобы расположение не сбрасывалось при перезаходе(или придумать что нибудь другое)
+  // TODO Проследить, чтобы при добавлении нового проекта список на экране обновлялся
+
   void openProjectCreateWindow() {
-    final TextEditingController _controller = TextEditingController();
+    final TextEditingController controller = TextEditingController();
 
     showDialog(
       context: context,
@@ -20,7 +26,7 @@ class _FirstPageState extends State<FirstPage> {
         return AlertDialog(
           title: Text("Новый проект"),
           content: TextField(
-            controller: _controller,
+            controller: controller,
             decoration: InputDecoration(
               labelText: "Название проекта",
               border: UnderlineInputBorder(),
@@ -30,7 +36,7 @@ class _FirstPageState extends State<FirstPage> {
             ElevatedButton(
               child: Text("Создать"),
               onPressed: () {
-                final projectName = _controller.text;
+                final projectName = controller.text;
                 if (projectName.isNotEmpty) {
                   final project = ProjectsStorage().createProject(projectName);
                   ProjectsStorage().addProjectToStorage(project);
@@ -49,21 +55,30 @@ class _FirstPageState extends State<FirstPage> {
     );
   }
 
-  List<Widget> getProjects() {
-    final projects = ProjectsStorage().getProjects();
-    List<Widget> project_list = [];
-    for (var value in projects.values) {
-      final project_name = value.name;
-      print("$project_name, ${value.id}");
-      final button = TextButton(
-        child: Text(project_name),
-        onPressed: () {},
-      );
-      project_list.add(button);
-    }
-    return project_list;
+  List<Project> getProjectsAsList() {
+    final projects = ProjectsStorage().getProjectsAsList();
+    return projects;
   }
-  
+
+  List<TextButton> convertProjectListToButtonProjectList() {
+    final projects = getProjectsAsList();
+    List<TextButton> buttonsList = [];
+    for (var project in projects) {
+      final button = TextButton(
+        key: UniqueKey(),
+        onPressed: () {},
+        child: Text("${project.id}: ${project.name}"),
+      );
+      buttonsList.add(button);
+    }
+    return buttonsList;
+  }
+
+  List<TextButton> getProjectsAsButtonList() {
+    final projects = convertProjectListToButtonProjectList();
+    return projects;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -71,9 +86,27 @@ class _FirstPageState extends State<FirstPage> {
         title: Text(widget.title),
       ),
       body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: getProjects(),
+        child: ReorderableListView(
+            onReorder: (oldIndex, newIndex) {
+              final TextButton temp = projects[oldIndex];
+              int index;
+              final int outIndex;
+              final List<TextButton> proj;
+              if (oldIndex > newIndex) {
+                index = newIndex;
+                outIndex = oldIndex;
+                proj = projects.sublist(index, outIndex);
+                projects.replaceRange(index+1, outIndex+1, proj);
+                projects[newIndex] = temp;
+              } else {
+                index = oldIndex+1;
+                outIndex = newIndex;
+                proj = projects.sublist(index, outIndex);
+                projects.replaceRange(index-1, outIndex-1, proj);
+                projects[newIndex-1] = temp;
+              }
+            },
+            children: projects,
         ),
       ),
       floatingActionButton: FloatingActionButton(
