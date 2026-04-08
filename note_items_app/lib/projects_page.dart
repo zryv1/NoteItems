@@ -11,72 +11,104 @@ class FirstPage extends StatefulWidget {
 }
 
 class _FirstPageState extends State<FirstPage> {
-
-  late final projects = getProjectsAsButtonList();
+  final projectsStorage = ProjectsStorage();
+  late final projectsAsButtonList = getProjectsAsButtonList();
 
   // TODO projects должен лежать в Hive, чтобы расположение не сбрасывалось при перезаходе(или придумать что нибудь другое)
   // TODO Проследить, чтобы при добавлении нового проекта список на экране обновлялся
 
-  void openProjectCreateWindow() {
-    final TextEditingController controller = TextEditingController();
+  Project _createProject(String projectName) {
+    final Project project = projectsStorage.createProject(projectName);
+    return project;
+  }
 
+  void _addProjectToStorage(project) {
+    projectsStorage.addProjectToStorage(project);
+  }
+
+  void _deleteProjectFromStorage(project) {
+
+  }
+
+  AlertDialog _getProjectCreationWindow(BuildContext context) {
+    final controller = TextEditingController();
+    final alertDialog = AlertDialog(
+      title: Text("Новый проект"),
+      content: TextField(
+        controller: controller,
+        decoration: InputDecoration(
+          labelText: "Название проекта",
+          border: UnderlineInputBorder(),
+        ),
+      ),
+      actions: <Widget>[
+        ElevatedButton(
+            child: Text("Создать"),
+            onPressed: () {
+              final projectName = controller.text;
+              final project = _createProject(projectName);
+              _addProjectToStorage(project);
+              Navigator.pop(context);
+              setState(() {});
+              },
+        ),
+        TextButton(
+            child: Text("Отмена"),
+            onPressed: () => Navigator.pop(context),
+        ),
+      ],
+    );
+    return alertDialog;
+  }
+
+  void openProjectCreationWindow() {
     showDialog(
       context: context,
-      builder: (BuildContext buildContext) {
-        return AlertDialog(
-          title: Text("Новый проект"),
-          content: TextField(
-            controller: controller,
-            decoration: InputDecoration(
-              labelText: "Название проекта",
-              border: UnderlineInputBorder(),
-            ),
-          ),
-          actions: <Widget>[
-            ElevatedButton(
-              child: Text("Создать"),
-              onPressed: () {
-                final projectName = controller.text;
-                if (projectName.isNotEmpty) {
-                  final project = ProjectsStorage().createProject(projectName);
-                  ProjectsStorage().addProjectToStorage(project);
-                  Navigator.pop(buildContext);
-                  setState(() {});
-                }
-              },
-            ),
-            TextButton(
-              child: Text("Отмена"),
-              onPressed: () {Navigator.pop(buildContext);},
-            ),
-          ],
-        );
-      },
+      builder: (BuildContext context) => _getProjectCreationWindow(context),
     );
   }
 
-  List<Project> getProjectsAsList() {
-    final projects = ProjectsStorage().getProjectsAsList();
-    return projects;
+  void _moveItemsInList(oldIndex, newIndex) {
+    final TextButton temp = projectsAsButtonList[oldIndex];
+    int index;
+    final int outIndex;
+    final List<TextButton> proj;
+    if (oldIndex > newIndex) {
+      index = newIndex;
+      outIndex = oldIndex;
+      proj = projectsAsButtonList.sublist(index, outIndex);
+      projectsAsButtonList.replaceRange(index+1, outIndex+1, proj);
+      projectsAsButtonList[newIndex] = temp;
+    } else {
+      index = oldIndex+1;
+      outIndex = newIndex;
+      proj = projectsAsButtonList.sublist(index, outIndex);
+      projectsAsButtonList.replaceRange(index-1, outIndex-1, proj);
+      projectsAsButtonList[newIndex-1] = temp;
+    }
   }
 
-  List<TextButton> convertProjectListToButtonProjectList() {
-    final projects = getProjectsAsList();
-    List<TextButton> buttonsList = [];
-    for (var project in projects) {
-      final button = TextButton(
-        key: UniqueKey(),
-        onPressed: () {},
-        child: Text("${project.id}: ${project.name}"),
-      );
-      buttonsList.add(button);
+  List<Project> getProjectsAsList() {
+    final Map<dynamic, Project> projectsAsMap = projectsStorage.getProjects();
+    final List<Project> projectsAsList = [];
+    for (var project in projectsAsMap.values) {
+      projectsAsList.add(project);
     }
-    return buttonsList;
+    return projectsAsList;
   }
 
   List<TextButton> getProjectsAsButtonList() {
-    final projects = convertProjectListToButtonProjectList();
-    return projects;
+    final Map<dynamic, Project> projectsAsMap = projectsStorage.getProjects();
+    List<TextButton> projectsAsButtonList = [];
+    for (var project in projectsAsMap.values) {
+      final button = TextButton(
+        key: UniqueKey(),
+        onPressed: () {},
+        child: Text("${project.name}"),
+      );
+      projectsAsButtonList.add(button);
+    }
+    return projectsAsButtonList;
   }
 
   @override
@@ -87,32 +119,12 @@ class _FirstPageState extends State<FirstPage> {
       ),
       body: Center(
         child: ReorderableListView(
-            onReorder: (oldIndex, newIndex) {
-              final TextButton temp = projects[oldIndex];
-              int index;
-              final int outIndex;
-              final List<TextButton> proj;
-              if (oldIndex > newIndex) {
-                index = newIndex;
-                outIndex = oldIndex;
-                proj = projects.sublist(index, outIndex);
-                projects.replaceRange(index+1, outIndex+1, proj);
-                projects[newIndex] = temp;
-              } else {
-                index = oldIndex+1;
-                outIndex = newIndex;
-                proj = projects.sublist(index, outIndex);
-                projects.replaceRange(index-1, outIndex-1, proj);
-                projects[newIndex-1] = temp;
-              }
-            },
-            children: projects,
+            onReorder: (oldIndex, newIndex) {_moveItemsInList(oldIndex, newIndex);},
+            children: projectsAsButtonList,
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          openProjectCreateWindow();
-        },
+        onPressed: () => openProjectCreationWindow(),
         child: const Icon(Icons.add),
       ),
     );

@@ -10,7 +10,8 @@ class ProjectsStorage {
     final id = idBox.get("id", defaultValue: 0);
     final projectId = id.toString();
     final Project project = Project(id: projectId, name: projectName);
-    idBox.put("id", id! + 1);
+    final nextId = id! + 1;
+    idBox.put("id", nextId);
     return project;
   }
   
@@ -22,14 +23,5 @@ class ProjectsStorage {
   Map<dynamic, Project> getProjects() {
       final projects = Hive.box<Project>("projects").toMap();
       return projects;
-  }
-
-  List<Project> getProjectsAsList() {
-    final projects = getProjects();
-    List<Project> projectsList = [];
-    for (var project in projects.values) {
-      projectsList.add(project);
-    }
-    return projectsList;
   }
 }
