@@ -12,22 +12,21 @@ class FirstPage extends StatefulWidget {
 
 class _FirstPageState extends State<FirstPage> {
   final projectsStorage = ProjectsStorage();
-  late final projectsAsButtonList = getProjectsAsButtonList();
+  late List<Widget> projectsAsButtonList = getNewProjectsAsButtonList();
 
   // TODO projects должен лежать в Hive, чтобы расположение не сбрасывалось при перезаходе(или придумать что нибудь другое)
-  // TODO Проследить, чтобы при добавлении нового проекта список на экране обновлялся
 
   Project _createProject(String projectName) {
-    final Project project = projectsStorage.createProject(projectName);
+    final Project project = this.projectsStorage.createProject(projectName);
     return project;
   }
 
-  void _addProjectToStorage(project) {
-    projectsStorage.addProjectToStorage(project);
+  void _addProjectToStorage(Project project) {
+    this.projectsStorage.addProjectToStorage(project);
   }
 
-  void _deleteProjectFromStorage(project) {
-
+  void _deleteProjectFromStorage(Project project) {
+    this.projectsStorage.deleteProjectFromStorage(project);
   }
 
   AlertDialog _getProjectCreationWindow(BuildContext context) {
@@ -49,7 +48,7 @@ class _FirstPageState extends State<FirstPage> {
               final project = _createProject(projectName);
               _addProjectToStorage(project);
               Navigator.pop(context);
-              setState(() {});
+              setState(() {projectsAsButtonList = getNewProjectsAsButtonList();});
               },
         ),
         TextButton(
@@ -68,42 +67,45 @@ class _FirstPageState extends State<FirstPage> {
     );
   }
 
-  void _moveItemsInList(oldIndex, newIndex) {
-    final TextButton temp = projectsAsButtonList[oldIndex];
+  void _moveItemsInList(int oldIndex, int newIndex) {
+    final temp = this.projectsAsButtonList[oldIndex];
     int index;
     final int outIndex;
-    final List<TextButton> proj;
+    final List<Widget> projects;
     if (oldIndex > newIndex) {
       index = newIndex;
       outIndex = oldIndex;
-      proj = projectsAsButtonList.sublist(index, outIndex);
-      projectsAsButtonList.replaceRange(index+1, outIndex+1, proj);
-      projectsAsButtonList[newIndex] = temp;
+      projects = this.projectsAsButtonList.sublist(index, outIndex);
+      this.projectsAsButtonList.replaceRange(index+1, outIndex+1, projects);
+      this.projectsAsButtonList[newIndex] = temp;
     } else {
       index = oldIndex+1;
       outIndex = newIndex;
-      proj = projectsAsButtonList.sublist(index, outIndex);
-      projectsAsButtonList.replaceRange(index-1, outIndex-1, proj);
-      projectsAsButtonList[newIndex-1] = temp;
+      projects = this.projectsAsButtonList.sublist(index, outIndex);
+      this.projectsAsButtonList.replaceRange(index-1, outIndex-1, projects);
+      this.projectsAsButtonList[newIndex-1] = temp;
     }
   }
 
   List<Project> getProjectsAsList() {
-    final Map<dynamic, Project> projectsAsMap = projectsStorage.getProjects();
+    final Map<dynamic, Project> projectsAsMap = this.projectsStorage.getProjects();
     final List<Project> projectsAsList = [];
     for (var project in projectsAsMap.values) {
       projectsAsList.add(project);
     }
     return projectsAsList;
   }
-
-  List<TextButton> getProjectsAsButtonList() {
-    final Map<dynamic, Project> projectsAsMap = projectsStorage.getProjects();
-    List<TextButton> projectsAsButtonList = [];
+  
+  List<Widget> getNewProjectsAsButtonList() {
+    final Map<dynamic, Project> projectsAsMap = projectsStorage.getProjects ();
+    final List<Widget> projectsAsButtonList = [];
     for (var project in projectsAsMap.values) {
+      final key = UniqueKey();
       final button = TextButton(
-        key: UniqueKey(),
-        onPressed: () {},
+        key: key,
+        onPressed: () {
+          
+        },
         child: Text("${project.name}"),
       );
       projectsAsButtonList.add(button);
@@ -119,7 +121,7 @@ class _FirstPageState extends State<FirstPage> {
       ),
       body: Center(
         child: ReorderableListView(
-            onReorder: (oldIndex, newIndex) {_moveItemsInList(oldIndex, newIndex);},
+            onReorder: (oldIndex, newIndex) => _moveItemsInList(oldIndex, newIndex),
             children: projectsAsButtonList,
         ),
       ),
