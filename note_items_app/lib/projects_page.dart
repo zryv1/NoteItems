@@ -48,8 +48,11 @@ class _FirstPageState extends State<FirstPage> {
               final project = _createProject(projectName);
               _addProjectToStorage(project);
               Navigator.pop(context);
-              setState(() {projectsAsButtonList = getNewProjectsAsButtonList();});
-              },
+              setState(() {
+                this.projectsAsButtonList = this.getNewProjectsAsButtonList();
+                print(this.projectsAsButtonList);
+              });
+            },
         ),
         TextButton(
             child: Text("Отмена"),
@@ -86,27 +89,39 @@ class _FirstPageState extends State<FirstPage> {
       this.projectsAsButtonList[newIndex-1] = temp;
     }
   }
-
-  List<Project> getProjectsAsList() {
-    final Map<dynamic, Project> projectsAsMap = this.projectsStorage.getProjects();
-    final List<Project> projectsAsList = [];
-    for (var project in projectsAsMap.values) {
-      projectsAsList.add(project);
-    }
-    return projectsAsList;
-  }
   
   List<Widget> getNewProjectsAsButtonList() {
     final Map<dynamic, Project> projectsAsMap = projectsStorage.getProjects ();
     final List<Widget> projectsAsButtonList = [];
     for (var project in projectsAsMap.values) {
       final key = UniqueKey();
-      final button = TextButton(
+      final button = Material(
         key: key,
-        onPressed: () {
-          
-        },
-        child: Text("${project.name}"),
+        child: InkWell(
+          onTap: () {
+
+          },
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Text("${project.name}"),
+                ),
+                IconButton(
+                  onPressed: () {
+                    _deleteProjectFromStorage(project);
+                    setState(() {
+                      this.projectsAsButtonList = this.getNewProjectsAsButtonList();
+                    });
+                    print(this.projectsAsButtonList);
+                  },
+                  icon: const Icon(Icons.delete),
+                ),
+              ],
+            ),
+          ),
+        ),
       );
       projectsAsButtonList.add(button);
     }
