@@ -98,7 +98,7 @@ class _ProjectsPageState extends State<ProjectsPage> {
         key: key,
         child: InkWell(
           onTap: () {
-
+            Navigator.pushNamed(context, "/floors", arguments: project);
           },
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),

@@ -7,6 +7,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'auth_page.dart';
 import 'projects_page.dart';
+import 'floors_page.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -39,6 +40,7 @@ class MyApp extends StatelessWidget {
       routes: {
         "/auth": (context) => const AuthPage(title: "Страница авторизации"),
         "/projects": (context) => ProjectsPage(title: "Мои проекты"),
+        "/floors": (context) => FloorsPage(title: "Название проекта"),
       },
     );
   }
