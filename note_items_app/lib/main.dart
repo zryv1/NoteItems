@@ -35,10 +35,10 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
 
-      initialRoute: "/",
+      initialRoute: "/auth",
       routes: {
-        "/": (context) => const AuthPage(title: "Страница авторизации"),
-        "/projects": (context) => FirstPage(title: "Мои проекты"),
+        "/auth": (context) => const AuthPage(title: "Страница авторизации"),
+        "/projects": (context) => ProjectsPage(title: "Мои проекты"),
       },
     );
   }

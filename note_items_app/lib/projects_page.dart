@@ -2,15 +2,15 @@ import 'package:flutter/material.dart';
 import 'models/project_model.dart';
 import 'projects_storage.dart';
 
-class FirstPage extends StatefulWidget {
-  const FirstPage({super.key, required this.title});
+class ProjectsPage extends StatefulWidget {
+  const ProjectsPage({super.key, required this.title});
   final String title;
 
   @override
-  State<FirstPage> createState() => _FirstPageState();
+  State<ProjectsPage> createState() => _ProjectsPageState();
 }
 
-class _FirstPageState extends State<FirstPage> {
+class _ProjectsPageState extends State<ProjectsPage> {
   final projectsStorage = ProjectsStorage();
   late List<Widget> projectsAsButtonList = getNewProjectsAsButtonList();
 
