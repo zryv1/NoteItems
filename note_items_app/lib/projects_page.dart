@@ -114,7 +114,6 @@ class _ProjectsPageState extends State<ProjectsPage> {
                     setState(() {
                       this.projectsAsButtonList = this.getNewProjectsAsButtonList();
                     });
-                    print(this.projectsAsButtonList);
                   },
                   icon: const Icon(Icons.delete),
                 ),
