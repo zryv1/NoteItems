@@ -50,7 +50,6 @@ class _ProjectsPageState extends State<ProjectsPage> {
               Navigator.pop(context);
               setState(() {
                 this.projectsAsButtonList = this.getNewProjectsAsButtonList();
-                print(this.projectsAsButtonList);
               });
             },
         ),
@@ -133,15 +132,19 @@ class _ProjectsPageState extends State<ProjectsPage> {
       appBar: AppBar(
         title: Text(widget.title),
       ),
-      body: Center(
-        child: ReorderableListView(
-            onReorder: (oldIndex, newIndex) => _moveItemsInList(oldIndex, newIndex),
-            children: projectsAsButtonList,
-        ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => openProjectCreationWindow(),
-        child: const Icon(Icons.add),
+      body: Column(
+        children: [
+          ElevatedButton(
+            onPressed: () => openProjectCreationWindow(),
+            child: Text("Создать проект"),
+          ),
+          Expanded(
+            child: ReorderableListView(
+              children: projectsAsButtonList,
+              onReorder: (oldIndex, newIndex) => _moveItemsInList(oldIndex, newIndex),
+            ),
+          ),
+        ],
       ),
     );
   }
