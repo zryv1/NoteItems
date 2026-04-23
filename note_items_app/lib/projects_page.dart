@@ -12,9 +12,7 @@ class ProjectsPage extends StatefulWidget {
 
 class _ProjectsPageState extends State<ProjectsPage> {
   final projectsStorage = ProjectsStorage();
-  late List<Widget> projectsAsButtonList = getNewProjectsAsButtonList();
-
-  // TODO projects должен лежать в Hive, чтобы расположение не сбрасывалось при перезаходе(или придумать что нибудь другое)
+  late List<Widget> projectsAsButtonList;
 
   Project _createProject(String projectName) {
     final Project project = this.projectsStorage.createProject(projectName);
@@ -45,12 +43,12 @@ class _ProjectsPageState extends State<ProjectsPage> {
             child: Text("Создать"),
             onPressed: () {
               final projectName = controller.text;
-              final project = _createProject(projectName);
-              _addProjectToStorage(project);
-              Navigator.pop(context);
-              setState(() {
-                this.projectsAsButtonList = this.getNewProjectsAsButtonList();
-              });
+              if (projectName.isNotEmpty) {
+                final project = _createProject(projectName);
+                _addProjectToStorage(project);
+                Navigator.pop(context);
+                setState(() {});
+              }
             },
         ),
         TextButton(
@@ -67,26 +65,6 @@ class _ProjectsPageState extends State<ProjectsPage> {
       context: context,
       builder: (BuildContext context) => _getProjectCreationWindow(context),
     );
-  }
-
-  void _moveItemsInList(int oldIndex, int newIndex) {
-    final temp = this.projectsAsButtonList[oldIndex];
-    int index;
-    final int outIndex;
-    final List<Widget> projects;
-    if (oldIndex > newIndex) {
-      index = newIndex;
-      outIndex = oldIndex;
-      projects = this.projectsAsButtonList.sublist(index, outIndex);
-      this.projectsAsButtonList.replaceRange(index+1, outIndex+1, projects);
-      this.projectsAsButtonList[newIndex] = temp;
-    } else {
-      index = oldIndex+1;
-      outIndex = newIndex;
-      projects = this.projectsAsButtonList.sublist(index, outIndex);
-      this.projectsAsButtonList.replaceRange(index-1, outIndex-1, projects);
-      this.projectsAsButtonList[newIndex-1] = temp;
-    }
   }
   
   List<Widget> getNewProjectsAsButtonList() {
@@ -128,6 +106,7 @@ class _ProjectsPageState extends State<ProjectsPage> {
 
   @override
   Widget build(BuildContext context) {
+    this.projectsAsButtonList = this.getNewProjectsAsButtonList();
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.title),
@@ -139,9 +118,8 @@ class _ProjectsPageState extends State<ProjectsPage> {
             child: Text("Создать проект"),
           ),
           Expanded(
-            child: ReorderableListView(
+            child: ListView(
               children: projectsAsButtonList,
-              onReorder: (oldIndex, newIndex) => _moveItemsInList(oldIndex, newIndex),
             ),
           ),
         ],

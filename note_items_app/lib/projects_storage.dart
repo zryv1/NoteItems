@@ -7,16 +7,20 @@ class ProjectsStorage {
 
   final projects = Hive.box<Project>("projects");
 
+  String getIdForProject() {
+    final idBox = Hive.box<int>("projectId");
+    final id = idBox.get("id", defaultValue: 0) as int;
+    idBox.put("id", id + 1);
+
+    return id.toString();
+  }
+
   Project createProject(String projectName) {
-    final idBox = Hive.box<int>("id");
-    final id = idBox.get("id", defaultValue: 0);
-    final projectId = id.toString();
-    final Project project = Project(id: projectId, name: projectName);
-    final nextId = id! + 1;
-    idBox.put("id", nextId);
+    final id = getIdForProject();
+    final Project project = Project(id: id, name: projectName);
     return project;
   }
-  
+
   void addProjectToStorage(Project project) async {
     await this.projects.put(project.id, project);
   }
