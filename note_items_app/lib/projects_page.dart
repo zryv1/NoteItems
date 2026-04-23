@@ -68,7 +68,7 @@ class _ProjectsPageState extends State<ProjectsPage> {
   }
   
   List<Widget> getNewProjectsAsButtonList() {
-    final Map<dynamic, Project> projectsAsMap = projectsStorage.getProjects ();
+    final Map<dynamic, Project> projectsAsMap = projectsStorage.getProjects();
     final List<Widget> projectsAsButtonList = [];
     for (var project in projectsAsMap.values) {
       final key = UniqueKey();
@@ -88,9 +88,7 @@ class _ProjectsPageState extends State<ProjectsPage> {
                 IconButton(
                   onPressed: () {
                     _deleteProjectFromStorage(project);
-                    setState(() {
-                      this.projectsAsButtonList = this.getNewProjectsAsButtonList();
-                    });
+                    setState(() {});
                   },
                   icon: const Icon(Icons.delete),
                 ),
