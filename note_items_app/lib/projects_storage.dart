@@ -1,4 +1,5 @@
 import 'models/project_model.dart';
+import 'models/floor_model.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
 // TODO Временное решение
@@ -30,6 +31,42 @@ class ProjectsStorage {
   }
 
   Map<dynamic, Project> getProjects() {
-      return this.projects.toMap();
+    return this.projects.toMap();
+  }
+
+  String getIdForFloor() {
+    final idBox = Hive.box<int>("floorId");
+    final id = idBox.get("id", defaultValue: 0) as int;
+    idBox.put("id", id + 1);
+
+    return id.toString();
+  }
+
+  Floor createFloor(String floorNumber) {
+    final id = getIdForFloor();
+    final Floor floor = Floor(id: id, number: floorNumber, pathToImage: "None");
+
+    return floor;
+  }
+
+  void addFloorToProject(Floor floor, String projectId) async {
+    final projects = getProjects();
+    Project project = projects[projectId]!;
+    project.floors[floor.id] = floor;
+    addProjectToStorage(project);
+  }
+
+  void deleteFloorFromProject(Floor floor, String projectId) async {
+    final projects = getProjects();
+    Project project = projects[projectId]!;
+    project.floors.remove(floor.id);
+    addProjectToStorage(project);
+  }
+
+  Map<String, Floor> getFloors(String projectId) {
+    final projects = getProjects();
+    Project project = projects[projectId]!;
+    final floors = project.floors;
+    return floors;
   }
 }

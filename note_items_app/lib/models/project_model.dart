@@ -10,11 +10,11 @@ class Project {
   @HiveField(1)
   final String name;
   @HiveField(2)
-  final Map<String, Floor>? floors; // floorNumber: Floor
+  final Map<String, Floor> floors; // floorNumber: Floor
 
   Project({
     required this.id,
     required this.name,
-    this.floors
-  });
+    Map<String, Floor>? floors,
+  }) : floors = floors ?? {};
 }

@@ -24,6 +24,7 @@ void main() async {
 
   await Hive.openBox<Project>("projects");
   await Hive.openBox<int>("projectId");
+  await Hive.openBox<int>("floorId");
 
   runApp(MyApp());
 }

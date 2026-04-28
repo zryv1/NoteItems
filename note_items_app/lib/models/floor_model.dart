@@ -8,13 +8,16 @@ class Floor {
   @HiveField(0)
   final String id;
   @HiveField(1)
-  final String pathToImage;
+  final String number;
   @HiveField(2)
-  final Map<String, Item>? items; // itemID: Item
+  final String pathToImage;
+  @HiveField(3)
+  final Map<String, Item> items; // itemID: Item
 
   Floor({
     required this.id,
+    required this.number,
     required this.pathToImage,
-    this.items
-  });
+    Map<String, Item>? items,
+  }) : items = items ?? {}; 
 }
